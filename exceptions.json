@@ -1,0 +1,17 @@
+{
+  "_comment": "Add date ranges here when you do NOT want the bot to book a table.",
+  "_format": "Dates must be in YYYY-MM-DD format. The range is inclusive on both ends.",
+  "_howto": "Copy one of the blocks below, change the label/start/end, and save the file. No restart needed — the script reads this file fresh each run.",
+  "exceptions": [
+    {
+      "label": "Summer Break – Summer 2026",
+      "start": "2026-05-15",
+      "end": "2026-09-21"
+    },
+    {
+      "label": "Summer 2026",
+      "start": "2026-05-15",
+      "end": "2026-09-14"
+    }
+  ]
+}

@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MU Booking Bot — Handoff Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f0f9ff;
+      color: #1a202c;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #0c2a4a 0%, #0284c7 50%, #2563a8 100%);
+      color: white;
+      padding: 64px 32px 56px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 30%, rgba(255,255,255,0.08) 0%, transparent 60%),
+                  radial-gradient(ellipse at 20% 80%, rgba(255,255,255,0.05) 0%, transparent 50%);
+    }
+    .hero-emoji {
+      font-size: 56px; display: block; margin-bottom: 16px;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+    }
+    .hero .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 20px;
+      padding: 5px 18px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .hero h1 { font-size: 38px; font-weight: 800; margin-bottom: 14px; letter-spacing: -0.8px; line-height: 1.2; }
+    .hero p  { font-size: 17px; opacity: 0.88; max-width: 500px; margin: 0 auto; font-weight: 400; }
+
+    /* ── Layout ── */
+    .container { max-width: 760px; margin: 0 auto; padding: 0 20px 72px; }
+
+    /* ── Section headers ── */
+    .section-label {
+      display: flex; align-items: center; gap: 12px;
+      margin: 52px 0 20px;
+    }
+    .section-label .icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .section-label h2  { font-size: 22px; font-weight: 700; color: #1a202c; letter-spacing: -0.3px; }
+    .section-label p   { font-size: 13px; color: #0369a1; margin-top: 2px; font-weight: 500; }
+
+    /* ── Cards ── */
+    .card {
+      background: white; border-radius: 16px; padding: 24px 28px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 3px rgba(3,105,161,0.06), 0 6px 20px rgba(3,105,161,0.06);
+      border: 1px solid rgba(3,105,161,0.06);
+      transition: box-shadow 0.2s;
+    }
+    .card:hover { box-shadow: 0 2px 8px rgba(3,105,161,0.1), 0 10px 28px rgba(3,105,161,0.08); }
+
+    /* ── Numbered steps ── */
+    .step {
+      display: flex; gap: 20px; align-items: flex-start;
+      background: white; border-radius: 16px; padding: 22px 24px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(3,105,161,0.06), 0 6px 20px rgba(3,105,161,0.06);
+      border: 1px solid rgba(3,105,161,0.06);
+      transition: box-shadow 0.2s;
+    }
+    .step:hover { box-shadow: 0 2px 8px rgba(3,105,161,0.1), 0 10px 28px rgba(3,105,161,0.08); }
+    .step-num {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, #0369a1, #2563a8);
+      color: white;
+      font-weight: 700; font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 2px;
+      box-shadow: 0 3px 10px rgba(3,105,161,0.35);
+    }
+    .step-body { flex: 1; min-width: 0; }
+    .step-body h3  { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #1a202c; }
+    .step-body p, .step-body li { font-size: 15px; color: #374151; }
+    .step-body ul  { margin: 8px 0 0 18px; }
+    .step-body li  { margin-bottom: 4px; }
+
+    /* ── Code blocks ── */
+    .code-block-wrap { margin: 10px 0 4px; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+    .code-block-bar {
+      background: #334155; padding: 8px 16px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .code-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .code-block {
+      background: #0f172a; color: #e2e8f0;
+      padding: 14px 18px;
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      font-size: 14px;
+      overflow-x: auto; white-space: pre; letter-spacing: 0.01em; line-height: 1.6;
+    }
+    .code-inline {
+      background: #e0f2fe; color: #0369a1;
+      border-radius: 5px; padding: 2px 7px;
+      font-family: "SF Mono", "Fira Code", monospace; font-size: 13.5px;
+      font-weight: 500;
+    }
+
+    /* ── Callout boxes ── */
+    .callout {
+      border-radius: 14px; padding: 16px 20px; margin: 14px 0;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .callout .icon { font-size: 20px; flex-shrink: 0; line-height: 1.5; }
+    .callout p, .callout li { font-size: 15px; }
+    .callout ul    { margin: 6px 0 0 18px; }
+    .callout li    { margin-bottom: 3px; }
+
+    .callout-blue   { background: #eff6ff; border-left: 4px solid #2563a8; }
+    .callout-green  { background: #f0fdf4; border-left: 4px solid #16a34a; }
+    .callout-yellow { background: #fffbeb; border-left: 4px solid #d97706; }
+    .callout-red    { background: #fff1f2; border-left: 4px solid #e11d48; }
+    .callout-purple { background: #f0f9ff; border-left: 4px solid #0369a1; }
+
+    /* ── Timeline ── */
+    .timeline { display: flex; flex-direction: column; }
+    .timeline-item {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 14px 0;
+    }
+    .timeline-item:not(:last-child) { border-bottom: 1px solid #e0f2fe; }
+    .timeline-dot {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #f0f9ff; border: 2px solid #0369a1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; flex-shrink: 0; margin-top: 2px;
+    }
+    .timeline-item p { font-size: 15px; color: #374151; }
+    .timeline-item strong { color: #1a202c; }
+
+    /* ── Troubleshooting ── */
+    .trouble-item {
+      background: white; border-radius: 14px; padding: 18px 22px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 3px rgba(3,105,161,0.06), 0 4px 14px rgba(3,105,161,0.05);
+      border: 1px solid rgba(3,105,161,0.06);
+      display: flex; gap: 16px; align-items: flex-start;
+      transition: box-shadow 0.2s;
+    }
+    .trouble-item:hover { box-shadow: 0 2px 8px rgba(3,105,161,0.1), 0 8px 24px rgba(3,105,161,0.08); }
+    .trouble-icon { font-size: 24px; flex-shrink: 0; margin-top: 1px; }
+    .trouble-item h4  { font-size: 15px; font-weight: 700; color: #1a202c; margin-bottom: 4px; }
+    .trouble-item p   { font-size: 14px; color: #4b5563; }
+    .trouble-item ul  { margin: 6px 0 0 18px; }
+    .trouble-item li  { font-size: 14px; color: #4b5563; margin-bottom: 3px; }
+
+    /* ── JSON example ── */
+    .json-example {
+      background: #0f172a; color: #e2e8f0;
+      border-radius: 10px; padding: 18px 20px;
+      font-family: "SF Mono", "Fira Code", monospace;
+      font-size: 13px; line-height: 1.8; overflow-x: auto;
+    }
+    .json-key  { color: #7dd3fc; }
+    .json-str  { color: #86efac; }
+    .json-comment { color: #64748b; font-style: italic; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center; padding: 36px 20px;
+      font-size: 13px; color: #7dd3fc;
+      background: linear-gradient(135deg, #0c2a4a, #1e40af);
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ── Checklist ── */
+    .checklist { list-style: none; margin: 8px 0 0; }
+    .checklist li {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 0; font-size: 15px; color: #374151;
+      border-bottom: 1px solid #e0f2fe;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .check-box {
+      width: 20px; height: 20px; border-radius: 6px;
+      border: 2px solid #bae6fd; flex-shrink: 0;
+      background: #f0f9ff;
+    }
+
+    .optional-tag {
+      display: inline-block; background: #f0fdf4; color: #16a34a;
+      border-radius: 6px; padding: 1px 8px;
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-left: 6px; vertical-align: middle;
+    }
+
+    /* ── Table of Contents ── */
+    .toc-card {
+      background: white; border-radius: 16px; padding: 24px 28px;
+      margin: 36px 0 0;
+      box-shadow: 0 1px 3px rgba(3,105,161,0.06), 0 6px 20px rgba(3,105,161,0.06);
+      border: 1px solid rgba(3,105,161,0.06);
+    }
+    .toc-title {
+      font-size: 17px; font-weight: 700; color: #1a202c;
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 16px; padding-bottom: 12px;
+      border-bottom: 2px solid #e0f2fe;
+    }
+    .toc-list {
+      list-style: none; padding: 0; margin: 0;
+      columns: 2; column-gap: 32px;
+    }
+    .toc-list > li {
+      padding: 3px 0; break-inside: avoid;
+    }
+    .toc-list a {
+      color: #0369a1; text-decoration: none; font-size: 14.5px; font-weight: 500;
+      transition: color 0.15s;
+    }
+    .toc-list a:hover { color: #0c2a4a; text-decoration: underline; }
+    .toc-sub {
+      list-style: none; padding: 0; margin: 5px 0 6px 16px;
+      border-left: 2px solid #bae6fd; padding-left: 12px;
+    }
+    .toc-sub li { padding: 1px 0; }
+    .toc-sub li a { font-size: 13px; font-weight: 400; color: #64748b; }
+    .toc-sub li a:hover { color: #0369a1; }
+    @media (max-width: 560px) { .toc-list { columns: 1; } }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ HERO -->
+<div class="hero">
+  <span class="hero-emoji">📅</span>
+  <div class="badge">UC Davis Memorial Union</div>
+  <h1>Table 7 Booking Bot</h1>
+  <p>Your automated guide. Follow these steps once and the bot handles everything from there.</p>
+</div>
+
+<div class="container">
+
+  <!-- ══════════════════════════════════════ TABLE OF CONTENTS -->
+  <nav class="toc-card" id="toc">
+    <div class="toc-title">📖 Contents</div>
+    <ol class="toc-list" style="list-style:decimal; padding-left:20px;">
+      <li><a href="#what-it-does">What this bot does</a></li>
+      <li><a href="#before-you-start">Before you start</a></li>
+      <li>
+        <a href="#setup">Setup</a>
+        <ol class="toc-sub">
+          <li><a href="#setup-step-1">1 · Download from Google Drive</a></li>
+          <li><a href="#setup-step-2">2 · Open Terminal</a></li>
+          <li><a href="#setup-step-3">3 · Install Homebrew</a></li>
+          <li><a href="#setup-step-4">4 · Install Node.js</a></li>
+          <li><a href="#setup-step-5">5 · Go to the bot folder</a></li>
+          <li><a href="#setup-step-6">6 · Run the setup script</a></li>
+          <li><a href="#setup-step-7">7 · Set your Mac to wake at 9:55 AM</a></li>
+          <li><a href="#setup-step-8">8 · Fill in blackout dates</a></li>
+          <li><a href="#setup-step-9">9 · Test run &amp; approve Duo</a></li>
+        </ol>
+      </li>
+      <li><a href="#daily-use">What happens at 10 AM</a></li>
+      <li><a href="#add-exception">Adding blackout dates</a></li>
+      <li><a href="#blackout-dates">Blackout dates (file format)</a></li>
+      <li><a href="#email-alerts">Email alerts</a></li>
+      <li><a href="#duo">Duo Push</a></li>
+      <li><a href="#manual-run">Running it manually</a></li>
+      <li><a href="#logs">Checking the logs</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+      <li><a href="#maintenance">Keeping the bot working</a></li>
+      <li><a href="#stopping">Stopping the bot</a></li>
+      <li><a href="#handoff">Passing it to someone new</a></li>
+      <li><a href="#file-map">What's in the folder</a></li>
+    </ol>
+  </nav>
+
+  <!-- ══════════════════════════════════════ WHAT IT DOES -->
+  <div class="section-label" id="what-it-does">
+    <div class="icon" style="background:#eff6ff;">⚡</div>
+    <div><h2>What this bot does</h2><p>The short version, no tech speak</p></div>
+  </div>
+
+  <div class="card">
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot">⏰</div>
+        <p><strong>9:55 AM Mon–Thu:</strong> Your Mac automatically wakes up — <strong>as long as it's plugged into power</strong>. macOS ignores scheduled wake events on battery, regardless of whether the lid is open or closed</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">🤖</div>
+        <p><strong>10:00 AM:</strong> The bot runs silently in the background — no popup, no browser window</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">🔑</div>
+        <p><strong>Login:</strong> The bot signs in with your UC Davis credentials automatically. Your password is never in any file — only in your Mac's secure Keychain</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">📱</div>
+        <p><strong>Duo Push (first time only):</strong> The very first run asks for a Duo Push on your phone. After you approve it once, the session is saved and you'll never need to do it again</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">✅</div>
+        <p><strong>Booking:</strong> The bot tries Table 7 first. If it's fully booked, it automatically tries Table 6, then 8, then 5, then 9 — spiraling outward until it finds something available. If the first attempt fails, it retries once before giving up.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">📅</div>
+        <p><strong>Calendar invite:</strong> On success, a Google Calendar invite is automatically sent to you and your org's shared inbox (set as <span class="code-inline">INVITE_TO</span> in index.js) with the booked table and time slot</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">📋</div>
+        <p><strong>Log + alert:</strong> Result is saved to <span class="code-inline">booking.log</span> — and if it failed, you'll get an email automatically</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ BEFORE YOU START -->
+  <div class="section-label" id="before-you-start">
+    <div class="icon" style="background:#f0fdf4;">📋</div>
+    <div><h2>Before you start</h2><p>Everything you need ready</p></div>
+  </div>
+
+  <div class="card">
+    <ul class="checklist">
+      <li><div class="check-box"></div><span>A Mac that you can leave plugged in overnight</span></li>
+      <li><div class="check-box"></div><span>Your UC Davis username and password (same ones for MyUCDavis)</span></li>
+      <li><div class="check-box"></div><span>Your phone nearby for a one-time Duo Push</span></li>
+      <li><div class="check-box"></div><span>A Gmail address <span class="optional-tag">optional</span> — only needed if you want email alerts when booking fails</span></li>
+    </ul>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ SETUP -->
+  <div class="section-label" id="setup">
+    <div class="icon" style="background:#faf5ff;">🚀</div>
+    <div><h2>Setup</h2><p>Do this once — takes about 5–10 minutes</p></div>
+  </div>
+
+  <div class="step" id="setup-step-1">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Download the bot folder from Google Drive</h3>
+      <p>Find the shared Google Drive folder and download it. When it downloads, you'll get a <strong>.zip file</strong> — double-click it to unzip. Then move the <span class="code-inline">mu-booking-bot</span> folder to your <strong>home folder</strong> (the one with your name in Finder's sidebar).</p>
+      <div class="callout callout-blue" style="margin-top:12px;">
+        <div class="icon">💡</div>
+        <p>The easiest way to move it: open a new Finder window, press <strong>⌘ + Shift + H</strong> to go to your home folder, then drag the <span class="code-inline">mu-booking-bot</span> folder in there.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="setup-step-2">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Open Terminal</h3>
+      <p>Press <strong>⌘ + Space</strong>, type <strong>Terminal</strong>, and press Enter. A window with a blinking cursor will open — that's it.</p>
+    </div>
+  </div>
+
+  <div class="step" id="setup-step-3">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Install Homebrew</h3>
+      <p>Homebrew is a free tool that makes installing software on a Mac simple. Paste this entire line into Terminal and press Enter:</p>
+      <div class="code-block">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</div>
+      <p style="margin-top:8px;">It will ask for your Mac password (won't show as you type — that's normal). The install takes a couple of minutes. When it finishes you'll see a prompt again.</p>
+      <div class="callout callout-yellow" style="margin-top:12px;">
+        <div class="icon">⚠️</div>
+        <p><strong>Already have Homebrew?</strong> If you've used it before, just skip this step. If you're not sure, run <span class="code-inline">brew --version</span> — if it prints a version number, you're good.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="setup-step-4">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Install Node.js</h3>
+      <p>Node.js is what runs the bot. Once Homebrew is installed, type this and press Enter:</p>
+      <div class="code-block">brew install node</div>
+      <p style="margin-top:8px;">Takes about a minute. When it finishes, confirm it worked by running:</p>
+      <div class="code-block">node --version</div>
+      <p style="margin-top:8px;">You should see something like <span class="code-inline">v22.0.0</span> — any version number means you're good.</p>
+    </div>
+  </div>
+
+  <div class="step" id="setup-step-5">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h3>Go to the bot folder</h3>
+      <p>Type this and press Enter:</p>
+      <div class="code-block">cd ~/mu-booking-bot</div>
+      <p style="font-size:13px; color:#64748b; margin-top:6px;">Nothing visible happens — that's normal. You're now inside the bot folder.</p>
+    </div>
+  </div>
+
+  <div class="step" id="setup-step-6">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <h3>Run the setup script</h3>
+      <p>Type this and press Enter:</p>
+      <div class="code-block">bash setup.sh</div>
+      <p style="margin-top:8px;">It will walk you through everything step by step. Here's what it will ask:</p>
+      <ul style="margin-top:10px;">
+        <li>Your <strong>UC Davis username</strong> (e.g. jsmith)</li>
+        <li>Your <strong>UC Davis password</strong> — won't show as you type, that's normal</li>
+        <li>An <strong>email address</strong> to send failure alerts to (optional — press Enter to skip)</li>
+        <li>If you want email alerts: a <strong>Gmail address</strong> to send from and a <strong>Gmail App Password</strong> (see the box below)</li>
+      </ul>
+
+      <div class="callout callout-purple" style="margin-top:14px;">
+        <div class="icon">📧</div>
+        <div>
+          <p><strong>How to get a Gmail App Password</strong> (only needed if you want email alerts):</p>
+          <ul>
+            <li>Go to <strong>myaccount.google.com</strong></li>
+            <li>Click <strong>Security</strong> → <strong>2-Step Verification</strong> (must be enabled first)</li>
+            <li>Scroll down and click <strong>App passwords</strong></li>
+            <li>Create a new one, name it <em>mu-booking-bot</em></li>
+            <li>It gives you a 16-character password — copy it and paste it when setup.sh asks</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="setup-step-7">
+    <div class="step-num">7</div>
+    <div class="step-body">
+      <h3>Set your Mac to wake at 9:55 AM</h3>
+      <p>The bot can't wake your Mac on its own — macOS has to do it. Open Terminal and run this command:</p>
+      <div class="code-block">sudo pmset repeat wake MTWR 09:55:00</div>
+      <p style="margin-top:8px;">It will ask for your Mac password (won't show as you type — that's normal). Once done, your Mac will automatically wake at 9:55 AM every Monday through Thursday.</p>
+      <div class="callout callout-green" style="margin-top:12px;">
+        <div class="icon">💡</div>
+        <p><strong>Lid open or closed — doesn't matter.</strong> What matters is that your Mac is <strong>plugged into power</strong>. macOS ignores scheduled wakes on battery regardless of lid state. As long as it's plugged in, it wakes silently, books the table, then goes back to sleep.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="setup-step-8">
+    <div class="step-num">8</div>
+    <div class="step-body">
+      <h3>Fill in your blackout dates</h3>
+      <p>Open the file <span class="code-inline">exceptions.json</span> in the bot folder. You need to decide which dates you personally don't want the bot running.</p>
+
+      <p style="margin-top:10px;"><strong>Things to consider adding:</strong></p>
+      <ul style="margin-top:6px;">
+        <li>The 4th to last week of the quarter until the new quarter date drop</li>
+        <li>Any additional breaks</li>
+        <li><strong>The quarter registration opening day</strong> — see the important note below</li>
+      </ul>
+
+      <div class="callout callout-red" style="margin-top:14px;">
+        <div class="icon">📅</div>
+        <div>
+          <p><strong>Important: The start of each quarter (manual booking required)</strong></p>
+
+          <p style="margin-top:10px;">At the start of each quarter, the MU releases the first <strong>4 weeks of table availability all at once</strong> on a single registration day. These drop dates are listed at:</p>
+          <p style="margin-top:6px;"><strong>→ memorialunion.ucdavis.edu/reservations</strong></p>
+
+          <p style="margin-top:12px;"><strong>How it works — Spring 2026 as an example:</strong></p>
+          <ul style="margin-top:8px; margin-left:18px; line-height:2.1;">
+            <li>Registration opens: <strong>Monday, March 23 at 10 AM</strong></li>
+            <li>On that day, all Mon–Fri tables from <strong>March 30 through April 20</strong> become available at once — that's the entire first 4 weeks</li>
+            <li>You must book these <strong>manually and quickly</strong> — it's competitive, and the bot only books one date at a time so it won't handle this</li>
+            <li>Starting <strong>Tuesday March 24</strong>, the bot takes over automatically: it books April 21. Wednesday March 25 → books April 22. Thursday March 26 → books April 23. One day at a time, 4 weeks out, from that point forward</li>
+          </ul>
+
+          <p style="margin-top:12px;"><strong>What to add as an exception:</strong></p>
+          <p style="margin-top:6px;">Add <strong>only the registration opening day</strong> as a blackout date (e.g. start: <code style="background:rgba(0,0,0,0.07); padding:1px 5px; border-radius:4px; font-size:13px;">2026-03-23</code> end: <code style="background:rgba(0,0,0,0.07); padding:1px 5px; border-radius:4px; font-size:13px;">2026-03-23</code>). The bot doesn't need to run that day — you're handling it manually. The very next morning (Tuesday) the bot resumes and picks up exactly where you left off.</p>
+
+          <p style="margin-top:10px; font-size:13.5px; color:#666;"><em>⚠️ Do not block Tue–Thu of that opening week as exceptions — the bot needs to run those days to book their 4-weeks-out dates.</em></p>
+        </div>
+      </div>
+
+      <p style="margin-top:14px;">See the <strong>Blackout Dates</strong> section below for step-by-step instructions on how to edit this file.</p>
+    </div>
+  </div>
+
+  <div class="step" id="setup-step-9">
+    <div class="step-num">9</div>
+    <div class="step-body">
+      <h3>Do a test run — and approve Duo once</h3>
+      <p>Run the bot right now to confirm everything works:</p>
+      <div class="code-block">node index.js</div>
+      <p style="margin-top:8px;">Watch the Terminal output as it runs. When a <strong>Duo Push</strong> appears on your phone, approve it within 60 seconds. This is the <strong>only time you'll ever need to do this</strong> — the session is saved automatically after this run.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <div class="icon">🎉</div>
+    <p><strong>Setup complete!</strong> The bot will run every weekday at 10 AM from here on. Nothing else to do.</p>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ DAILY USE -->
+  <div class="section-label" id="daily-use">
+    <div class="icon" style="background:#fff7ed;">📆</div>
+    <div><h2>What happens every day at 10 AM</h2><p>What to expect once it's running</p></div>
+  </div>
+
+  <div class="card">
+    <p style="font-size:15px;">The bot runs completely silently — no popup, no browser window. Check <span class="code-inline">booking.log</span> afterward to confirm it ran and what it booked.</p>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ ADD EXCEPTION -->
+  <div class="section-label" id="add-exception">
+    <div class="icon" style="background:#f0fdf4;">➕</div>
+    <div><h2>Adding blackout dates the easy way</h2><p>No file editing required</p></div>
+  </div>
+
+  <div class="card">
+    <p style="font-size:15px; margin-bottom:12px;">Instead of editing <span class="code-inline">exceptions.json</span> by hand, you can run this command and just answer the prompts:</p>
+    <div class="code-block">npm run add-exception</div>
+    <p style="font-size:15px; margin-top:14px;">It will ask you for a label, a start date, and an end date — then add it automatically and sort the file. You can still edit the file manually if you prefer.</p>
+  </div>
+
+  <!-- ══════════════════════════════════════ BLACKOUT DATES -->
+  <div class="section-label" id="blackout-dates">
+    <div class="icon" style="background:#fff1f2;">🗓</div>
+    <div><h2>Blackout dates</h2><p>Telling the bot when NOT to run</p></div>
+  </div>
+
+  <div class="card">
+    <p style="font-size:15px; margin-bottom:16px;">Open the file <span class="code-inline">exceptions.json</span> in any text editor (TextEdit, Notes, VS Code — whatever you have). Add any dates where <strong>you don't want or need a table</strong>.</p>
+
+    <p style="font-size:15px; margin-bottom:10px;"><strong>Each entry looks like this:</strong></p>
+
+    <div class="json-example"><span class="json-comment">// Copy this block to add a new date range:</span>
+{
+  <span class="json-key">"label"</span>: <span class="json-str">"First Two Weeks – Fall 2026"</span>,
+  <span class="json-key">"start"</span>: <span class="json-str">"2026-09-24"</span>,  <span class="json-comment">← year-month-day</span>
+  <span class="json-key">"end"</span>:   <span class="json-str">"2026-10-07"</span>   <span class="json-comment">← both days included</span>
+}</div>
+
+    <div class="callout callout-yellow" style="margin-top:16px;">
+      <div class="icon">📌</div>
+      <div>
+        <p><strong>Date format is strict:</strong> always <span class="code-inline">YYYY-MM-DD</span></p>
+        <ul>
+          <li>✅ Correct: <span class="code-inline">2026-09-24</span></li>
+          <li>❌ Wrong: <span class="code-inline">Sep 24, 2026</span> or <span class="code-inline">9/24/26</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="margin-top:14px; font-size:15px;"><strong>To remove a date range:</strong> delete the entire <span class="code-inline">{ ... }</span> block for that entry.</p>
+    <div class="callout callout-yellow" style="margin-top:10px;">
+      <div class="icon">⚠️</div>
+      <p>After deleting an entry, make sure the last remaining entry in the list does <strong>not</strong> have a comma at the end of it. A leftover comma will cause the bot to fail to read the file.</p>
+    </div>
+    <p style="margin-top:14px; font-size:15px;">Save the file when done. No restart needed — the bot re-reads it every time it runs.</p>
+
+    <div class="callout callout-red" style="margin-top:12px;">
+      <div class="icon">🔴</div>
+      <div>
+        <p><strong>Remember to add the quarter registration opening day as an exception each quarter.</strong> On that day, the first 4 weeks of tables are released all at once at <strong>memorialunion.ucdavis.edu/reservations</strong> — book those manually. Only block that one day; the bot picks up the next morning and runs normally from there.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ EMAIL ALERTS -->
+  <div class="section-label" id="email-alerts">
+    <div class="icon" style="background:#faf5ff;">📧</div>
+    <div><h2>Email alerts</h2><p>Getting notified when something goes wrong</p></div>
+  </div>
+
+  <div class="card">
+    <p style="font-size:15px; margin-bottom:12px;">If you set up email notifications during setup, you'll automatically get an email any time the booking fails. The email includes the error and what to do next.</p>
+
+    <p style="font-size:15px; margin-bottom:8px;"><strong>Didn't set it up yet?</strong> Re-run setup and it'll ask you:</p>
+    <div class="code-block">bash setup.sh</div>
+
+    <p style="font-size:15px; margin-top:14px; margin-bottom:8px;"><strong>What you'll need:</strong></p>
+    <ul style="font-size:15px; margin-left:18px;">
+      <li>An email address to <em>receive</em> alerts (can be any email)</li>
+      <li>A Gmail address to <em>send</em> from (any Gmail account)</li>
+      <li>A Gmail App Password — <strong>not your regular Gmail password</strong></li>
+    </ul>
+
+    <div class="callout callout-purple" style="margin-top:14px;">
+      <div class="icon">🔑</div>
+      <div>
+        <p><strong>How to get a Gmail App Password:</strong></p>
+        <ul>
+          <li>Go to <strong>myaccount.google.com</strong></li>
+          <li>Click <strong>Security</strong> → <strong>2-Step Verification</strong> (must already be on)</li>
+          <li>Scroll to <strong>App passwords</strong> and create one named <em>mu-booking-bot</em></li>
+          <li>It gives you a 16-character code — use that as your app password</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ DUO -->
+  <div class="section-label" id="duo">
+    <div class="icon" style="background:#f0fdf4;">📱</div>
+    <div><h2>Duo Push — only needed once</h2><p>After the first run, it's fully automatic</p></div>
+  </div>
+
+  <div class="card">
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot">1️⃣</div>
+        <p><strong>First run only:</strong> A Duo Push appears on your phone. Approve it within 60 seconds. The bot waits for you.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">✅</div>
+        <p><strong>After that:</strong> The bot detects the saved session and skips Duo entirely — no phone needed, ever again.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">🔁</div>
+        <p><strong>If Duo comes back:</strong> Sessions can expire after a very long break (like summer). If it shows up again, just approve it once — it'll save again and go back to skipping.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ MANUAL RUN -->
+  <div class="section-label" id="manual-run">
+    <div class="icon" style="background:#f0fdf4;">▶️</div>
+    <div><h2>Running it manually</h2><p>For testing or booking outside the schedule</p></div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <p style="font-size:15px; color:#374151;">Two ways to run manually — pick whichever you prefer. Both do the same thing.</p>
+    <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:180px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:12px 16px;">
+        <p style="font-weight:700; font-size:14px; color:#166534; margin-bottom:4px;">Option A — Terminal</p>
+        <p style="font-size:13px; color:#374151;">Type a command. More control over which mode to run.</p>
+      </div>
+      <div style="flex:1; min-width:180px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px 16px;">
+        <p style="font-weight:700; font-size:14px; color:#1e40af; margin-bottom:4px;">Option B — One-click launcher</p>
+        <p style="font-size:13px; color:#374151;">Set up once, then just double-click an icon — no Terminal ever again.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#f8fafc; border-radius:12px; padding:4px 0 4px; margin-bottom:6px;">
+    <p style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.08em; padding:10px 20px 4px;">Option A — Terminal</p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Open Terminal</h3>
+      <p>Press <strong>⌘ + Space</strong> on your keyboard, type <strong>Terminal</strong>, then press <strong>Enter</strong>. A window with a blinking cursor will open.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Go to the bot folder</h3>
+      <p>Click inside the Terminal window, type this exactly, then press <strong>Enter</strong>:</p>
+      <div class="code-block">cd ~/mu-booking-bot</div>
+      <p style="font-size:13px; color:#64748b; margin-top:6px;">Nothing visible happens — that's normal. You're now inside the bot folder.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Run the bot</h3>
+      <p>Type this and press <strong>Enter</strong>:</p>
+      <div class="code-block">node index.js</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Watch the Terminal output</h3>
+      <p>Lines will appear showing what the bot is doing. When it's finished you'll see either:</p>
+      <div style="background:#f0fdf4; border-left:4px solid #16a34a; border-radius:0 10px 10px 0; padding:10px 14px; margin:8px 0; font-family:monospace; font-size:13px; color:#166534;">SUCCESS: Booking confirmed — Table 7 | ...</div>
+      <div style="background:#fff1f2; border-left:4px solid #e11d48; border-radius:0 10px 10px 0; padding:10px 14px; font-family:monospace; font-size:13px; color:#9f1239;">ERROR: ...</div>
+      <p style="font-size:14px; color:#64748b; margin-top:10px;">You can close Terminal once it prints <span class="code-inline">Browser closed. Done.</span></p>
+    </div>
+  </div>
+
+  <div class="callout callout-yellow" style="margin-bottom:20px;">
+    <div class="icon">📱</div>
+    <p>If this is the <strong>first time running</strong> after setup (or after a long break), a <strong>Duo Push</strong> will appear on your phone. Approve it within 60 seconds — the bot is waiting for you.</p>
+  </div>
+
+  <div style="background:#f8fafc; border-radius:12px; padding:4px 0 4px; margin-bottom:6px;">
+    <p style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.08em; padding:10px 20px 4px;">Option B — One-click launcher <span class="optional-tag">set up once</span></p>
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="icon">💡</div>
+    <p>Create a double-clickable icon for your Dock or Desktop. When you click it, a Terminal window opens and the bot runs with a visible browser. Use this whenever your Mac wasn't plugged in at 10 AM and you need to book manually.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <h3>Open Automator</h3>
+      <p>Press <strong>⌘ + Space</strong>, type <strong>Automator</strong>, and press Enter.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <h3>Create a new Application</h3>
+      <p>Click <strong>New Document</strong>. A window appears asking what type of document to create — click <strong>Application</strong>, then click <strong>Choose</strong>.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <h3>Add a "Run Shell Script" action</h3>
+      <p>You'll see a search box on the left side. Type <strong>Run Shell Script</strong> and press Enter. When it appears in the list below, <strong>double-click it</strong>. A text box will appear on the right side of the screen.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <h3>Paste the command</h3>
+      <p>Click inside the text box on the right, select all the text already there (<strong>⌘ + A</strong>), and delete it. Then paste this exactly:</p>
+      <div class="code-block">osascript -e 'tell application "Terminal"
+    activate
+    do script "export PATH=/opt/homebrew/bin:/usr/local/bin:$PATH; cd ~/mu-booking-bot; node index.js"
+end tell'</div>
+      <div class="callout callout-green" style="margin-top:12px;">
+        <div class="icon">✅</div>
+        <p><strong>This works on all Macs</strong> — Intel and Apple Silicon (M1/M2/M3/M4) — exactly as written. You don't need to change anything.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-body">
+      <h3>Save it</h3>
+      <p>Press <strong>⌘ + S</strong>. Name it <strong>Book Table</strong>. Save it to your <strong>Desktop</strong> or <strong>Applications</strong> folder — wherever feels easiest to find.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-body">
+      <h3>Add it to your Dock <span class="optional-tag">optional</span></h3>
+      <p>Open Finder, find the <strong>Book Table</strong> file you just saved, and drag it to your Dock. From now on, one click runs the bot — no Terminal needed.</p>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ LOGS -->
+  <div class="section-label" id="logs">
+    <div class="icon" style="background:#f0fdf4;">📋</div>
+    <div><h2>Checking the logs</h2><p>To see if it's working</p></div>
+  </div>
+
+  <div class="card">
+    <p style="font-size:15px; margin-bottom:12px;">Open Terminal and run:</p>
+    <div class="code-block">cat ~/mu-booking-bot/booking.log</div>
+
+    <p style="font-size:15px; margin-top:16px; margin-bottom:10px;">Each line is timestamped. Here's what to look for:</p>
+
+    <div style="background:#f0fdf4; border-left:4px solid #16a34a; border-radius:0 10px 10px 0; padding:12px 16px; margin-bottom:10px; font-family:monospace; font-size:13px; color:#166534;">
+      [2026-04-17T10:03:22Z] SUCCESS: Booking confirmed for Table 7.
+    </div>
+    <div style="background:#fff1f2; border-left:4px solid #e11d48; border-radius:0 10px 10px 0; padding:12px 16px; margin-bottom:10px; font-family:monospace; font-size:13px; color:#9f1239;">
+      [2026-04-17T10:03:45Z] ERROR: No available slots found for Table 7.
+    </div>
+    <div style="background:#fffbeb; border-left:4px solid #d97706; border-radius:0 10px 10px 0; padding:12px 16px; font-family:monospace; font-size:13px; color:#92400e;">
+      [2026-04-17T10:00:01Z] Skipping — today falls within exception: "Finals Week"
+    </div>
+
+    <p style="font-size:14px; color:#64748b; margin-top:14px;">If there was an error, a screenshot named <span class="code-inline">error-[timestamp].png</span> is also saved in the bot folder so you can see what the browser was looking at.</p>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ TROUBLESHOOTING -->
+  <div class="section-label" id="troubleshooting">
+    <div class="icon" style="background:#fff1f2;">🔧</div>
+    <div><h2>Troubleshooting</h2><p>Something went wrong? Start here</p></div>
+  </div>
+
+  <div class="trouble-item">
+    <div class="trouble-icon">🔐</div>
+    <div>
+      <h4>"Could not read username from Keychain"</h4>
+      <p>Your credentials weren't saved properly. Re-run <span class="code-inline">bash setup.sh</span> and enter them again.</p>
+    </div>
+  </div>
+
+  <div class="trouble-item">
+    <div class="trouble-icon">📱</div>
+    <div>
+      <h4>Duo Push timed out or never arrived</h4>
+      <p>Make sure your phone has signal and Duo notifications are on. Run manually with <span class="code-inline">node index.js --headed</span> so you can watch and approve in time.</p>
+    </div>
+  </div>
+
+  <div class="trouble-item">
+    <div class="trouble-icon">🪑</div>
+    <div>
+      <h4>"No available slots found for any table"</h4>
+      <p>Two possibilities:</p>
+      <ul>
+        <li>All tables are fully booked — nothing to do, try again tomorrow. The bot already tried Tables 7, 6, 8, 5, 9, and beyond before giving up.</li>
+        <li>It's the <strong>quarter registration opening day</strong> — the first 4 weeks of tables were just released all at once and need to be booked manually at <strong>memorialunion.ucdavis.edu/reservations</strong>. Add just that one day as an exception. The bot resumes normally the next morning.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="trouble-item">
+    <div class="trouble-icon">😴</div>
+    <div>
+      <h4>Bot never ran at 10 AM</h4>
+      <p>Two things to check:</p>
+      <ul>
+        <li><strong>Wake schedule:</strong> Open Terminal and run <span class="code-inline">sudo pmset repeat wake MTWR 09:55:00</span> to set it, then try again. <strong>The Mac must be plugged into power</strong> — macOS ignores scheduled wakes on battery, even with the lid open</li>
+        <li><strong>Job registered:</strong> Open Terminal and run <span class="code-inline">launchctl list | grep mubooking</span> — if nothing shows, re-run <span class="code-inline">bash setup.sh</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="trouble-item">
+    <div class="trouble-icon">🌐</div>
+    <div>
+      <h4>Login is failing / wrong password error</h4>
+      <p>Your UC Davis password may have changed. Re-run <span class="code-inline">bash setup.sh</span> and enter your updated password.</p>
+    </div>
+  </div>
+
+  <div class="trouble-item">
+    <div class="trouble-icon">🔄</div>
+    <div>
+      <h4>Duo Push is appearing again after months</h4>
+      <p>The saved session expired (common after summer break). Just approve it once and it saves again — back to skipping after that.</p>
+    </div>
+  </div>
+
+  <div class="trouble-item">
+    <div class="trouble-icon">📧</div>
+    <div>
+      <h4>Not getting failure emails</h4>
+      <ul>
+        <li>Check your spam/junk folder</li>
+        <li>Make sure you used a Gmail App Password, not your regular Gmail password</li>
+        <li>Re-run <span class="code-inline">bash setup.sh</span> to re-enter the email settings</li>
+        <li>Make sure 2-Step Verification is enabled on the Gmail account you're sending from</li>
+      </ul>
+    </div>
+  </div>
+
+
+
+  <!-- ══════════════════════════════════════ MAINTENANCE -->
+  <div class="section-label" id="maintenance">
+    <div class="icon" style="background:#faf5ff;">🔄</div>
+    <div><h2>Keeping the bot working over time</h2><p>What breaks, why, and how to fix it — no coding experience needed</p></div>
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="icon">💡</div>
+    <p>The bot works by reading the booking website like a person would — clicking buttons and filling in fields. If the website ever changes its layout, the bot might stop finding those buttons. That's the most common reason it breaks. Everything below shows how to fix it.</p>
+  </div>
+
+  <!-- What breaks -->
+  <div class="card" style="margin-top:14px;">
+    <p style="font-weight:700; font-size:16px; margin-bottom:16px;">The most common things that break</p>
+
+    <div style="display:flex; flex-direction:column; gap:0;">
+      <div style="display:flex; gap:16px; padding:14px 0; border-bottom:1px solid #f1f5f9; align-items:flex-start;">
+        <div style="font-size:22px; flex-shrink:0;">🌐</div>
+        <div>
+          <p style="font-weight:700; color:#1a202c; margin-bottom:4px;">The booking website changes its layout <span style="background:#fff1f2; color:#e11d48; font-size:11px; font-weight:700; padding:2px 7px; border-radius:5px; margin-left:4px;">MOST COMMON</span></p>
+          <p style="font-size:14px; color:#4b5563;">The MU occasionally redesigns its website. When this happens, the bot can't find the buttons it's looking for. You'll see an error like "No available slots found" even when you can see slots on the page yourself.</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:16px; padding:14px 0; border-bottom:1px solid #f1f5f9; align-items:flex-start;">
+        <div style="font-size:22px; flex-shrink:0;">🔑</div>
+        <div>
+          <p style="font-weight:700; color:#1a202c; margin-bottom:4px;">The UC Davis login page changes</p>
+          <p style="font-size:14px; color:#4b5563;">Rare, but occasionally UC Davis updates their login page. The bot might get stuck before even reaching the booking page.</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:16px; padding:14px 0; align-items:flex-start;">
+        <div style="font-size:22px; flex-shrink:0;">📦</div>
+        <div>
+          <p style="font-weight:700; color:#1a202c; margin-bottom:4px;">The bot's tools become outdated</p>
+          <p style="font-size:14px; color:#4b5563;">Playwright (the tool that controls the browser) and Node.js get updates over time. Once every 6–12 months it's worth refreshing them.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tools you need -->
+  <div class="card">
+    <p style="font-weight:700; font-size:16px; margin-bottom:16px;">Free tools to have ready</p>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+
+      <div style="display:flex; gap:14px; align-items:flex-start;">
+        <div style="width:40px; height:40px; background:#0066b8; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:14px; flex-shrink:0;">VS</div>
+        <div>
+          <p style="font-weight:700; color:#1a202c; margin-bottom:2px;">VS Code <span style="font-size:13px; color:#64748b; font-weight:400;">— free code editor</span></p>
+          <p style="font-size:14px; color:#4b5563;">Download at <strong>code.visualstudio.com</strong>. This is how you open and edit the bot's files. It highlights code in colour, making it much easier to read.</p>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px; align-items:flex-start;">
+        <div style="width:40px; height:40px; background:#1a1a1a; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:18px; flex-shrink:0;">✦</div>
+        <div>
+          <p style="font-weight:700; color:#1a202c; margin-bottom:2px;">Claude or ChatGPT <span style="font-size:13px; color:#64748b; font-weight:400;">— free AI assistant</span></p>
+          <p style="font-size:14px; color:#4b5563;">Available at <strong>claude.ai</strong> or <strong>chatgpt.com</strong>. You can paste the error from <span class="code-inline">booking.log</span> and ask it what went wrong and how to fix it. You can also paste sections of <span class="code-inline">index.js</span> and ask it to update them. No coding knowledge needed — just describe what's broken.</p>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:14px; align-items:flex-start;">
+        <div style="width:40px; height:40px; background:#4285f4; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:14px; flex-shrink:0;">Chr</div>
+        <div>
+          <p style="font-weight:700; color:#1a202c; margin-bottom:2px;">Chrome DevTools <span style="font-size:13px; color:#64748b; font-weight:400;">— built into Chrome, free</span></p>
+          <p style="font-size:14px; color:#4b5563;">Press <strong>⌘ + Option + I</strong> on any webpage in Chrome to open DevTools. You can hover over any element on the page to see its code name — useful for telling an AI what changed.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Fix: website layout changed -->
+  <div class="card">
+    <p style="font-weight:700; font-size:16px; margin-bottom:4px;">How to fix it when the website layout changes</p>
+    <p style="font-size:14px; color:#64748b; margin-bottom:16px;">The most common fix — takes about 10 minutes with AI help</p>
+
+    <div class="step" style="box-shadow:none; border:1px solid #e2e8f0; margin-bottom:10px;">
+      <div class="step-num" style="width:30px; height:30px; font-size:14px;">1</div>
+      <div class="step-body">
+        <p>Run the bot manually with the browser visible so you can see exactly where it gets stuck:</p>
+        <div class="code-block">node index.js --headed</div>
+      </div>
+    </div>
+
+    <div class="step" style="box-shadow:none; border:1px solid #e2e8f0; margin-bottom:10px;">
+      <div class="step-num" style="width:30px; height:30px; font-size:14px;">2</div>
+      <div class="step-body">
+        <p>When it gets stuck, open the same page manually in Chrome. Press <strong>⌘ + Option + I</strong> to open DevTools. Hover over the button or slot the bot can't find — you'll see its code name highlighted in the panel on the right.</p>
+      </div>
+    </div>
+
+    <div class="step" style="box-shadow:none; border:1px solid #e2e8f0; margin-bottom:10px;">
+      <div class="step-num" style="width:30px; height:30px; font-size:14px;">3</div>
+      <div class="step-body">
+        <p>Take a screenshot of the DevTools panel showing the element's code. Open <strong>claude.ai</strong> or <strong>chatgpt.com</strong> and say something like:</p>
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:14px 16px; margin-top:10px; font-size:14px; color:#374151; font-style:italic;">
+          "I have a Playwright bot that books tables on a website. It used to find the table slots with a certain CSS selector but the website changed. Here's what the element looks like now [paste screenshot or HTML]. Here's the relevant section of my index.js [paste the findLatestSlotForTable function]. Can you update the selectors to match the new layout?"
+        </div>
+      </div>
+    </div>
+
+    <div class="step" style="box-shadow:none; border:1px solid #e2e8f0; margin-bottom:10px;">
+      <div class="step-num" style="width:30px; height:30px; font-size:14px;">4</div>
+      <div class="step-body">
+        <p>The AI will give you updated code. Open <span class="code-inline">index.js</span> in VS Code, find the section it mentioned, and replace it with the new version.</p>
+      </div>
+    </div>
+
+    <div class="step" style="box-shadow:none; border:1px solid #e2e8f0;">
+      <div class="step-num" style="width:30px; height:30px; font-size:14px;">5</div>
+      <div class="step-body">
+        <p>Run it again to test:</p>
+        <div class="code-block">node index.js --headed</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fix: update dependencies -->
+  <div class="card">
+    <p style="font-weight:700; font-size:16px; margin-bottom:4px;">How to update the bot's tools</p>
+    <p style="font-size:14px; color:#64748b; margin-bottom:14px;">Do this once every 6–12 months to keep things fresh</p>
+
+    <p style="font-size:14px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">Update Playwright and other packages:</p>
+    <div class="code-block">cd ~/mu-booking-bot
+npm update</div>
+
+    <p style="font-size:14px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:.05em; margin:14px 0 6px;">Update Node.js:</p>
+    <div class="code-block">brew upgrade node</div>
+
+    <p style="font-size:14px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:.05em; margin:14px 0 6px;">After updating Playwright, reinstall its browser:</p>
+    <div class="code-block">npx playwright install chromium</div>
+
+    <div class="callout callout-green" style="margin-top:14px;">
+      <div class="icon">💡</div>
+      <p>If anything breaks after an update, just ask Claude or ChatGPT: <em>"I updated my Playwright bot's dependencies and now it's throwing this error: [paste error]. How do I fix it?"</em></p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ STOPPING -->
+  <div class="section-label" id="stopping">
+    <div class="icon" style="background:#fff1f2;">🛑</div>
+    <div><h2>Stopping the bot</h2><p>When you want to turn it off</p></div>
+  </div>
+
+  <div class="card">
+    <p style="font-size:15px; margin-bottom:12px;">To permanently disable the daily job, open Terminal and run these two lines:</p>
+    <div class="code-block">launchctl unload ~/Library/LaunchAgents/com.mubooking.plist
+rm ~/Library/LaunchAgents/com.mubooking.plist</div>
+    <p style="font-size:14px; color:#64748b; margin-top:12px;">To re-enable later, just re-run <span class="code-inline">bash setup.sh</span>.</p>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ HANDOFF -->
+  <div class="section-label" id="handoff">
+    <div class="icon" style="background:#f0fdf4;">🤝</div>
+    <div><h2>Passing this to someone new</h2><p>What the next person needs to do</p></div>
+  </div>
+
+  <div class="card">
+    <p style="font-size:15px; margin-bottom:16px;">Share this whole folder with them. They only need to follow these steps:</p>
+
+    <div class="step" style="box-shadow:none; border:1px solid #e2e8f0; margin-bottom:10px;">
+      <div class="step-num" style="width:30px;height:30px;font-size:14px;">1</div>
+      <div class="step-body"><p>Delete the <span class="code-inline">.chrome-profile/</span> folder inside the bot folder (this clears the old saved session)</p></div>
+    </div>
+    <div class="step" style="box-shadow:none; border:1px solid #e2e8f0; margin-bottom:10px;">
+      <div class="step-num" style="width:30px;height:30px;font-size:14px;">2</div>
+      <div class="step-body"><p>Follow all the Setup steps above from Step 1 — <span class="code-inline">bash setup.sh</span> overwrites the old credentials automatically</p></div>
+    </div>
+    <div class="step" style="box-shadow:none; border:1px solid #e2e8f0; margin-bottom:10px;">
+      <div class="step-num" style="width:30px;height:30px;font-size:14px;">3</div>
+      <div class="step-body"><p>Update <span class="code-inline">exceptions.json</span> with any new quarter dates they want to skip</p></div>
+    </div>
+
+    <div class="callout callout-blue" style="margin-top:8px;">
+      <div class="icon">ℹ️</div>
+      <p>The blackout dates in <span class="code-inline">exceptions.json</span> carry over automatically — the new person just needs to add any new ones for upcoming quarters.</p>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════ FILE MAP -->
+  <div class="section-label" id="file-map">
+    <div class="icon" style="background:#f8fafc;">🗂</div>
+    <div><h2>What's in the folder</h2><p>In case you're curious</p></div>
+  </div>
+
+  <div class="card">
+
+    <p style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">In the download</p>
+    <ul style="list-style:none; font-size:14px; margin-bottom:20px;">
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f1f5f9;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">HANDOFF.html</span>
+        <span style="color:#4b5563;">This guide — open it in any browser</span>
+      </li>
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f1f5f9;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">index.js</span>
+        <span style="color:#4b5563;">The bot itself — handles login, Duo, booking, and email alerts. Don't edit unless debugging.</span>
+      </li>
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f1f5f9;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">setup.sh</span>
+        <span style="color:#4b5563;">The setup script — run this once to install everything and save your credentials</span>
+      </li>
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f1f5f9;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">add-exception.js</span>
+        <span style="color:#4b5563;">Helper script for adding blackout dates — run with <code style="font-size:12px; background:#f1f5f9; padding:1px 5px; border-radius:4px;">npm run add-exception</code></span>
+      </li>
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f1f5f9;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">exceptions.json</span>
+        <span style="color:#4b5563;">Blackout dates — the only file you'll edit regularly</span>
+      </li>
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f1f5f9;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">com.mubooking.plist</span>
+        <span style="color:#4b5563;">Tells macOS to run the bot at 10 AM Mon–Thu — managed by setup.sh, don't edit</span>
+      </li>
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f1f5f9;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">package.json</span>
+        <span style="color:#4b5563;">Lists the tools the bot needs — used by setup.sh to install them, don't edit</span>
+      </li>
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">package-lock.json</span>
+        <span style="color:#4b5563;">Locks the exact versions of those tools — don't edit</span>
+      </li>
+    </ul>
+
+    <p style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Created by setup.sh</p>
+    <ul style="list-style:none; font-size:14px; margin-bottom:20px;">
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f1f5f9;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">node_modules/</span>
+        <span style="color:#4b5563;">The installed tools the bot depends on (Playwright, etc.) — created automatically, don't touch</span>
+      </li>
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">config.json</span>
+        <span style="color:#4b5563;">Your email alert settings — written by setup.sh when you enter your email</span>
+      </li>
+    </ul>
+
+    <p style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.08em; margin-bottom:8px;">Created automatically as the bot runs</p>
+    <ul style="list-style:none; font-size:14px;">
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f1f5f9;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">.chrome-profile/</span>
+        <span style="color:#4b5563;">Saved Chrome login session so Duo is only needed once — delete this folder when handing off to someone new</span>
+      </li>
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f1f5f9;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">booking.log</span>
+        <span style="color:#4b5563;">A running log of every booking attempt — one timestamped line per run, success or failure</span>
+      </li>
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid #f1f5f9;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">launchd-stdout.log</span>
+        <span style="color:#4b5563;">Raw output captured from scheduled runs — useful if something seems wrong and booking.log isn't enough</span>
+      </li>
+      <li style="display:flex; align-items:flex-start; gap:12px; padding:9px 0;">
+        <span style="font-family:monospace; color:#2563a8; min-width:190px; padding-top:1px;">launchd-stderr.log</span>
+        <span style="color:#4b5563;">Error output from scheduled runs — usually empty, but check here if the bot isn't running at all</span>
+      </li>
+    </ul>
+
+  </div>
+
+</div>
+
+<div class="footer">
+  Built with Playwright for MSA at UC Davis · Absolutely stuck? Contact 25-26 Secretary
+</div>
+
+</body>
+</html>

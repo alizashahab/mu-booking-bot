@@ -1,0 +1,14 @@
+{
+  "name": "mu-booking-bot",
+  "version": "1.0.0",
+  "description": "Automated UC Davis rec center table booking via Playwright",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "add-exception": "node add-exception.js"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.13",
+    "playwright": "^1.44.0"
+  }
+}

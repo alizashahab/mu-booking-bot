@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  com.mubooking.plist
+  ────────────────────────────────────────────────────────────────────────────
+  This file is managed by setup.sh — do NOT edit NODE_PATH or SCRIPT_DIR
+  manually unless you know what you're doing.
+
+  To change the run time, edit the Hour/Minute values below, then reload:
+    launchctl unload ~/Library/LaunchAgents/com.mubooking.plist
+    launchctl load  ~/Library/LaunchAgents/com.mubooking.plist
+
+  Weekday key: 1=Mon  2=Tue  3=Wed  4=Thu  (5=Fri, 6=Sat, 0=Sun are omitted)
+  ────────────────────────────────────────────────────────────────────────────
+-->
+<plist version="1.0">
+<dict>
+
+  <key>Label</key>
+  <string>com.mubooking</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>NODE_PATH</string>
+    <string>SCRIPT_DIR/index.js</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>SCRIPT_DIR</string>
+
+  <!-- Run at 10:00 AM on Monday through Thursday only -->
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict>
+      <key>Weekday</key><integer>1</integer>
+      <key>Hour</key><integer>10</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>2</integer>
+      <key>Hour</key><integer>10</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>3</integer>
+      <key>Hour</key><integer>10</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+    <dict>
+      <key>Weekday</key><integer>4</integer>
+      <key>Hour</key><integer>10</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+  </array>
+
+  <!-- Capture any stdout/stderr that bypasses our logger -->
+  <key>StandardOutPath</key>
+  <string>SCRIPT_DIR/launchd-stdout.log</string>
+  <key>StandardErrorPath</key>
+  <string>SCRIPT_DIR/launchd-stderr.log</string>
+
+  <!-- Do not restart automatically on crash -->
+  <key>KeepAlive</key>
+  <false/>
+
+  <!-- Only run when the user is logged in (needs a display for headed browser) -->
+  <key>RunAtLoad</key>
+  <false/>
+
+</dict>
+</plist>
